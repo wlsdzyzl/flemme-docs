@@ -56,7 +56,7 @@ Let's start with a easy one: a simple U-Net for medical image segmentation. Firs
 
 .. code-block:: console
 
-   train_flemme path/to/config/train_unet.yaml
+   train_flemme path/to/config/train_unet_sem.yaml
 
 To visualize the training process
 
@@ -67,7 +67,7 @@ To test the results, you need to create a test config file that looks like `test
 
 .. code-block:: console
 
-   test_flemme path/to/config/test_unet.yaml
+   test_flemme path/to/config/test_unet_sem.yaml
 
 .. toctree::
    :maxdepth: 2
