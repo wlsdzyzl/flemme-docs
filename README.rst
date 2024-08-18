@@ -1,9 +1,3 @@
-Template for the Read the Docs tutorial
+Documentation of Flemme
 =======================================
-
-This GitHub template includes fictional Python library
-with some basic Sphinx docs.
-
-Read the tutorial here:
-
-https://docs.readthedocs.io/en/stable/tutorial/
+This repo contains configuration files and raw ``rst`` files for the `documentation of flemme <https://flemme-docs.readthedocs.io/en/latest/>`_

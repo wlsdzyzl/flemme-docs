@@ -1,4 +1,4 @@
-test_unet.yaml
+test_unet_sem.yaml
 ===============
 .. code-block:: yaml
    :linenos:

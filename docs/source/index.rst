@@ -52,7 +52,7 @@ Train a Model
 =============
 It's quite easy to build and train a deep learning model with Flemme, you don't even need to write any codes. All things can be down through a ``yaml`` Configuration file.
 
-Let's start with a easy one: a simple U-Net for medical image segmentation. Firstly, you need to create a config file and copy the contents from `train_unet.yaml <train_config.html>`_. Then, run the following command:
+Let's start with a easy one: a simple U-Net for medical image segmentation. Firstly, you need to create a config file and copy the contents from `train_unet_sem.yaml <train_unet_sem.html>`_. Then, run the following command:
 
 .. code-block:: console
 
@@ -63,7 +63,7 @@ To visualize the training process
 .. code-block:: console
 
    tensorboard --logdir path/to/checkpoint/CVC-ClinicDB/UNet
-To test the results, you need to create a test config file that looks like `test_unet.yaml <test_config.html>`_ and run:
+To test the results, you need to create a test config file that looks like `test_unet_sem.yaml <test_unet_sem.html>`_ and run:
 
 .. code-block:: console
 
@@ -85,6 +85,6 @@ To test the results, you need to create a test config file that looks like `test
    :maxdepth: 2
    :caption: Example configuration files
 
-   train_config
-   test_config
+   train_unet_sem
+   test_unet_sem
 

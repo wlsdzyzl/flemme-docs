@@ -1,4 +1,4 @@
-train_unet.yaml
+train_unet_sem.yaml
 ===============
 .. code-block:: yaml
    :linenos:
