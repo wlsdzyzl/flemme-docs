@@ -15,6 +15,8 @@ The above is an overview of Flemme. In Flemme, we separate encoders from the mod
 
 We support encoders using **convolution**, **transformer** and **SSM (state-space model)** as backbones. For model architectures, we implement the base architecture following an encoder-decoder style. Several derived architectures are used for segmentation, reconstruction and generation tasks. 
 
+We are also working on Flemme to support **point cloud** modeling.
+
 Now, let's get Started with Flemme!
 
 Install Flemme
@@ -68,6 +70,8 @@ To test the results, you need to create a test config file that looks like `test
 .. code-block:: console
 
    test_flemme path/to/config/test_unet_sem.yaml
+
+In the following modules, we elaborate supported architectures, encoders and other components of flemme. 
 
 .. toctree::
    :maxdepth: 2
