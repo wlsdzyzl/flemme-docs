@@ -135,7 +135,7 @@ As we discussed before, you don't need to define all parameters for encoder and 
         fc_channels: [128]
         decoder_fc_channels: [128, 64]
 
-Supported building_block for CNN encoder and decoder: ``[conv, res_conv, double_conv]``.
+Supported ``building_block`` for CNN encoder and decoder: ``[conv, res_conv, double_conv]``.
 
 ViT
 ===
@@ -207,7 +207,7 @@ ViT indicates the encoders using **vision transformer** as backbones. To initial
 ..                     drop_path=0.1, 
 ..                     **kwargs)
 
-Supported building_block for ViT encoder and decoder: ``[vit]``.
+Supported ``building_block`` for ViT encoder and decoder: ``[vit]``.
 
 Swin
 ====
@@ -279,7 +279,7 @@ you need to specify the following parameters:
 ..                     **kwargs)
 
 As you can see, the only different between defining a ViT encoder and Swin encoder is that you need to specify the ``window_size``. 
-Supported building_block for Swin encoder and decoder: ``[swin, double_swin, res_swin]``.
+Supported ``building_block`` for Swin encoder and decoder: ``[swin, double_swin, res_swin]``.
 
 VMamba
 ====
@@ -355,4 +355,4 @@ you need to specify the following parameters:
 ..                 scan_mode = 'single', flip_scan = True, 
 ..                 return_features = False,
 ..                 **kwargs)
-Supported building_block for Swin encoder and decoder: ``[vmamba, vmamba2, double_vmamba, double_vmamba2, res_vmamba, res_vmamba2]``.
+Supported ``building_block`` for Swin encoder and decoder: ``[vmamba, vmamba2, double_vmamba, double_vmamba2, res_vmamba, res_vmamba2]``.

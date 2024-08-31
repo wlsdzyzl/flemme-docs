@@ -83,7 +83,7 @@ In the following modules, we elaborate supported architectures, encoders and oth
    loss
    eval
    global_config
-
+   script
 
 .. toctree::
    :maxdepth: 2
