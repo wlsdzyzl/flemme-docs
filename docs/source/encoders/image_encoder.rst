@@ -356,3 +356,5 @@ you need to specify the following parameters:
 ..                 return_features = False,
 ..                 **kwargs)
 Supported ``building_block`` for Swin encoder and decoder: ``[vmamba, vmamba2, double_vmamba, double_vmamba2, res_vmamba, res_vmamba2]``.
+
+The corresponding U-shaped variants for ``CNN``, ``ViT``, ``Swin`` and ``VMamba`` encoders are ``UNet``, ``ViTU``, ``SwinU`` and ``VMambaU``. Empirically, U-shaped networks don't contain dense layers.
