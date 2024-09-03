@@ -79,7 +79,7 @@ In the following modules, we elaborate supported architectures, encoders and oth
    
    archi
    encoder
-   dataset
+   dataloading
    loss
    eval
    global_config
