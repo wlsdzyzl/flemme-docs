@@ -245,6 +245,7 @@ We adopt and implement some common augmentations for 3D images.
 
 .. code-block:: python
   :linenos:
+
   # Randomly flips the image.
   ## axis_prob define the flip probability for each axis
   RandomFlip.__init__(self, axis_prob=0.5)
