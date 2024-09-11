@@ -92,6 +92,11 @@ train_unet_sem.yaml
       - name: Dice
       - name: ACC
       - name: mIoU
+  
+  score_metric:
+    name: Dice
+    higher_is_better: true
+
   # max training epochs
   max_epoch: 500
   # in warm-up epoch, learning rate will be fixed as the initial value

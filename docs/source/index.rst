@@ -65,11 +65,14 @@ To visualize the training process
 .. code-block:: console
 
    tensorboard --logdir path/to/checkpoint/CVC-ClinicDB/UNet
+
 To test the results, you need to create a test config file that looks like `test_unet_sem.yaml <test_unet_sem.html>`_ and run:
 
 .. code-block:: console
 
    test_flemme path/to/config/test_unet_sem.yaml
+
+
 
 In the following modules, we elaborate supported architectures, encoders and other components of flemme. 
 
@@ -81,9 +84,9 @@ In the following modules, we elaborate supported architectures, encoders and oth
    encoder
    dataloading
    loss
-   eval
    global_config
    script
+   play
 
 .. toctree::
    :maxdepth: 2
@@ -92,3 +95,4 @@ In the following modules, we elaborate supported architectures, encoders and oth
    train_unet_sem
    test_unet_sem
 
+More configuration files please refer to `resources <https://github.com/wlsdzyzl/flemme/tree/main/resources>`_.

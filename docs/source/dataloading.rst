@@ -16,7 +16,7 @@ In Flemme, Data loader can also be specified through configuration file as follo
       data_dir: images
       label_dir: masks
       data_suffix: jpg
-      ### you can specify data path here.
+      ### you can specify data path here. 
       # data_path: path/to/single_data_set
     ## you can specify a list of data paths
     ## we would read all the datasets and concatenate them into one dataset

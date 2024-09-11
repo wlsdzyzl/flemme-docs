@@ -63,6 +63,7 @@ CNN indicates the encoders using **convolution** as backbones. To initialize a C
                     ## some parameters determined by architectures.
                     return_features = False, z_count = 1, 
                     **kwargs)
+
 ``CNNDecoder`` has very similar parameters for initialization. But most of the parameters can be derived from the encoder:
 
 .. code-block:: python
@@ -282,7 +283,7 @@ As you can see, the only different between defining a ViT encoder and Swin encod
 Supported ``building_block`` for Swin encoder and decoder: ``[swin, double_swin, res_swin]``.
 
 VMamba
-====
+=======
 VMamba indicates the encoders using **vision mamba** as backbones. To initialize a VMamba encoder and decoder, 
 you need to specify the following parameters:
 
@@ -355,6 +356,22 @@ you need to specify the following parameters:
 ..                 scan_mode = 'single', flip_scan = True, 
 ..                 return_features = False,
 ..                 **kwargs)
+
 Supported ``building_block`` for Swin encoder and decoder: ``[vmamba, vmamba2, double_vmamba, double_vmamba2, res_vmamba, res_vmamba2]``.
 
+U-Shaped Encoders
+==================
+
 The corresponding U-shaped variants for ``CNN``, ``ViT``, ``Swin`` and ``VMamba`` encoders are ``UNet``, ``ViTU``, ``SwinU`` and ``VMambaU``. Empirically, U-shaped networks don't contain dense layers.
+You can directly replace the encoder name with the corresponding U-shaped version to train a U-shaped network.
+
+To summarize, we support the following image encoders:
+
+================  ====================  ============================
+Encoder           Backbones             Building Blocks
+================  ====================  ============================
+CNN, UNet         convolution           conv, res_conv, double_conv
+ViT, ViTU         vision transformer    vit
+Swin, SwinU       vision transformer    swin, double_swin, res_swin
+VMamba, VMambaU   vision ssm (mamba)    vmamba, vmamba2, double_vmamba, double_vmamba2, res_vmamba, res_vmamba2
+================  ====================  ============================

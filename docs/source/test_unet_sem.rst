@@ -65,6 +65,7 @@ test_unet_sem.yaml
       - name: Dice
       - name: ACC
       - name: mIoU
+      
   model_path: path/to/checkpoint/CVC-ClinicDB/UNet/ckp_last.pth
   # directory for saving results
   seg_dir: path/to/results/seg/CVC-ClinicDB/UNet
