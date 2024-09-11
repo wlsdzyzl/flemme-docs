@@ -236,7 +236,7 @@ Beside of these, we also implement the following transforms (some of them are wr
                 sigma=50, 
                 execution_probability=0.1)
 
-For 2D image, most of the transforms need to be called before ``ToTensor`` because they should be performed on tensor.
+For 2D image, most of the transforms need to be called after ``ToTensor`` because they should be performed on tensor.
 
 3D Image Data Augmentation
 ---------------------------
