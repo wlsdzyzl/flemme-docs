@@ -42,8 +42,8 @@ CNN indicates the encoders using **convolution** as backbones. To initialize a C
                     ## define the convolution: depth-wise and kernel size
                     depthwise = False, kernel_size = 3, 
                     ## number of channels for each dense layer (fully-connected layer)
-                    ## fc_channels can be an empty list, indicating there is no dense layer in the encoder 
-                    fc_channels = [256], 
+                    ## dense_channels can be an empty list, indicating there is no dense layer in the encoder 
+                    dense_channels = [256], 
                     ## method fur dowm-samping, can be one of ['conv', 'inter'], indicate using convolution and interpolation
                     dsample_function = 'conv', 
                     ## building block, can be one of ['conv', 'double_conv', 'res_conv']
@@ -80,7 +80,7 @@ CNN indicates the encoders using **convolution** as backbones. To initialize a C
                     in_channel = 256,  
                     ## you can specify the following parameters, but we recommend to use the default choices
                     ## by default, we reverse the correspondings in encoder
-                    fc_channels = [32], 
+                    dense_channels = [32], 
                     up_channels = [128, 64], 
                     up_attens = [None, None],
                     shape_scaling = [2, 2], 
@@ -133,8 +133,8 @@ As we discussed before, you don't need to define all parameters for encoder and 
         middle_channels: [32, 32]
         # up_channels: [16, 8]
         building_block: conv
-        fc_channels: [128]
-        decoder_fc_channels: [128, 64]
+        dense_channels: [128]
+        decoder_dense_channels: [128, 64]
 
 Supported ``building_block`` for CNN encoder and decoder: ``[conv, res_conv, double_conv]``.
 
@@ -152,7 +152,7 @@ ViT indicates the encoders using **vision transformer** as backbones. To initial
                     patch_size = 2, 
                     patch_channel = 32,
                     building_block = 'vit', 
-                    fc_channels = [256], 
+                    dense_channels = [256], 
                     time_channel = 0,
                     down_channels = [128, 256], 
                     ## number of heads for MSA in each down-sample layer, defaut value is 3
@@ -188,7 +188,7 @@ ViT indicates the encoders using **vision transformer** as backbones. To initial
 ..                     image_channel = 3, 
 ..                     in_channel = 64,
 ..                     patch_size = 2, 
-..                     fc_channels = [32], 
+..                     dense_channels = [32], 
 ..                     building_block = 'vit',
 ..                     time_channel = 0,
 ..                     mlp_hidden_ratio=[4., ], 
@@ -229,7 +229,7 @@ you need to specify the following parameters:
                     patch_size = 2, 
                     patch_channel = 32,
                     building_block = 'swin', 
-                    fc_channels = [256], 
+                    dense_channels = [256], 
                     mlp_hidden_ratio=[4., ], 
                     qkv_bias=True, qk_scale=None, 
                     down_channels = [128, 256], 
@@ -260,7 +260,7 @@ you need to specify the following parameters:
 ..                     # size of window, same as the encoder
 ..                     window_size = 8, 
 ..                     patch_size = 2, 
-..                     fc_channels = [32], 
+..                     dense_channels = [32], 
 ..                     building_block = 'swin', 
 ..                     time_channel = 0,
 ..                     mlp_hidden_ratio=[4., ], 
@@ -301,7 +301,7 @@ you need to specify the following parameters:
                     middle_channels = [256, 256], 
                     mlp_hidden_ratio=[4., ], 
                     building_block = 'vmamba', 
-                    fc_channels = [256],
+                    dense_channels = [256],
                     dropout=0., 
                     drop_path=0.1, 
                     normalization = 'layer', 
@@ -336,7 +336,7 @@ you need to specify the following parameters:
 
 ..     VMambaDecoder.__init__(self, image_size, image_channel = 3, 
 ..                 patch_size = 2, in_channel = 64,
-..                 mlp_hidden_ratio=[4., ], fc_channels = [32], 
+..                 mlp_hidden_ratio=[4., ], dense_channels = [32], 
 ..                 up_channels = [128, 64], final_channels = [64, 64], 
 ..                 time_channel = 0,
 ..                 building_block = 'vmamba',

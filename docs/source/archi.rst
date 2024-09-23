@@ -62,7 +62,7 @@ If the condition is a image or point cloud, any encoders introduced in  `Encoder
       patch_size: 2
       down_channels: [64, 128, 256]
       middle_channels: [512, 512]
-      fc_channels: [128]
+      dense_channels: [128]
       building_block: conv
       normalization: batch
 
@@ -292,8 +292,8 @@ The following configuration files define a point cloud LDM. Latent diffusion mod
         point_num: 1024
         building_block: single
         conv_channels: [64, 128, 256, 512]
-        fc_channels: [1024]
-        decode_fc_channels: [1024, 512, 256]
+        dense_channels: [1024]
+        decode_dense_channels: [1024, 512, 256]
         activation: lrelu
         pointwise: False
       reconstruction_losses: 
@@ -308,7 +308,7 @@ The following configuration files define a point cloud LDM. Latent diffusion mod
       encoder:
         name: PointWise
         in_channel: 1024
-        fc_channels: [1024, 2048, 4096]
+        dense_channels: [1024, 2048, 4096]
         building_block: res_dense
         activation: silu
         normalization: layer
