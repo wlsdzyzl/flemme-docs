@@ -84,6 +84,7 @@ In the following modules, we elaborate supported architectures, encoders and oth
    encoder
    dataloading
    loss
+   sampler
    global_config
    script
    play
@@ -94,5 +95,7 @@ In the following modules, we elaborate supported architectures, encoders and oth
 
    train_unet_sem
    test_unet_sem
-
+   train_unet_ddim
+   test_unet_ddpm
+   
 More configuration files please refer to `resources <https://github.com/wlsdzyzl/flemme/tree/main/resources>`_.

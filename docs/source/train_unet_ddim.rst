@@ -1,0 +1,79 @@
+train_unet_ddim.yaml
+=====================
+
+.. code-block:: yaml
+  :linenos:
+
+  # train ae or vae
+  rand_seed: 2024
+  model:
+    # can be AE, VAE and DDPM
+    name: DDIM
+    num_steps: 1000
+    sample_num_steps: 100
+    beta_schedule: consine
+    eps_model:
+      # encoder config
+      time_channel: 128
+      encoder:
+        name: UNet
+        image_size: [28, 28]
+        in_channel: 1
+        patch_size: 1
+        down_channels: [32, 64]
+        middle_channels: [128, 128]
+        building_block: res
+        activation: silu
+        num_block: 2
+        normalization: group
+        num_groups: 16
+        dropout: 0.1
+      # condition_embedding:
+      #   combine_condition: add
+      #   merge_timestep_and_condition: true
+      #   encoder:
+      #     name: OneHot
+      #     type: categories
+      #     out_channel: 128
+      #     num_classes: 10
+    # classifier_free_guidance:
+    #   condition_dropout: 0.2
+    #   guidance_weight: 2.0
+    ## 2D ddpm
+    eps_loss:
+      name: MSE
+  loader:
+    dataset: 
+      name: MNIST
+    data_path_list: 
+      - /media/wlsdzyzl/DATA1/datasets/img/MNIST
+    batch_size: 128
+    num_workers: 8
+    shuffle: true
+    data_transforms:
+      - name: Resize
+        ## the value must be list
+        size: [28, 28]
+      - name: ToTensor
+      - name: Normalize
+        mean: [0.5]
+        std: [0.5]
+  check_point_dir: path/to/checkpoint/MNIST/DDPM
+  sampler:
+    num_sample_steps: 100
+    rand_seed: 2024
+    clipped: true
+    clip_range: [-1.0, 1.0]
+  ### parameter for optimizer
+  optimizer:
+    name: AdamW
+    lr: 0.0003
+    weight_decay: 0.00000001
+  ### scheduler for learning rate
+  lr_scheduler: 
+    name: LinearLR
+    start_factor: 1.0
+    end_factor: 0.01
+  max_epoch: 1000
+  write_after_iters: 50
+  save_after_epochs: 5

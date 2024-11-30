@@ -8,3 +8,4 @@ In Flemme, the encoder a model employed actually determines the data type. We su
    
    encoders/image_encoder
    encoders/pcd_encoder
+   encoders/graph_encoder
