@@ -88,3 +88,44 @@ Time and space usage are recorded and printed after the test. To run this script
     python test_time_and_space.py
 
 An example of evaluation results refers to `eval_time_and_space.log <https://github.com/wlsdzyzl/flemme/blob/main/scripts/unittest/eval_time_and_space.log>`_.
+
+Select Samples for visualization
+==================================
+(Especially for segmentation models) Sometimes we tried different methods like A, B, and C. And we might get a evaluation results like the follows: 
+
+.. math::
+
+    \text{ACC}(A) > \text{ACC}(B) > \text{ACC}(C)
+
+However, the accuracy is computed over the whole dataset. If we randomly choose a sample from the datasets, the results might not follow the above relation.
+Also, we may want to select the sample with enough foreground regions for visualization. 
+
+This script can select samples whose predictions follow some specified relations and filter out those samples that don't contains a mininum number of foreground pixels.
+You can also choose to save the colorized segmented results.
+
+.. code-block:: bash
+
+    python select_samples_and_colorize.py --result_path path/to/predictions \
+    # sub dirs of different methods
+    --sub_dirs ResNet,ResNet_HSeg,UNet,UNet_HSeg,UNet_Atten,UNet_Atten_HSeg,SwinU,SwinU_HSeg,MambaU,MambaU_HSeg \
+    --suffix .png \
+    --target_path path/to/results/seg/CVC-ClinicDB/target \
+    # sub dirs of targets. because the targets might have different size.
+    # if the methods have the same targets, just setting the target_path is ok
+    --target_sub_dirs ResNet,ResNet_HSeg,UNet,UNet_HSeg,UNet_Atten,UNet_Atten_HSeg,SwinU,SwinU_HSeg,MambaU,MambaU_HSeg  \
+    --target_suffix _tar.png \
+    # set input path for visualization.
+    --input_path path/to/input/CVC-ClinicDB/raw \
+    # sub dirs of inputs (raw images). because the inputs might have different size.
+    # if the methods have the same inputs, just setting the input_path is ok
+    --input_subdir ResNet_HSeg,UNet,UNet_HSeg,UNet_Atten,UNet_Atten_HSeg,SwinU,SwinU_HSeg,MambaU,MambaU_HSeg\
+    --input_suffix
+    # output_dir, where the selected and visualized results will be saved
+    --output_dir path/to/output
+    # conditions are the specified relations
+    --conditions '0<1,2>3,4>5,6>7,8>9' \
+    # choose a evaluation metric to compare
+    --eval Dice
+    # if this optional is set, we choose the middle slice to represent a 3D image.
+    # otherwise, we will search all slices (might take a much longer time). 
+    --compute_middle_for_3d
