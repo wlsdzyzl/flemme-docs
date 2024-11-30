@@ -89,8 +89,8 @@ Time and space usage are recorded and printed after the test. To run this script
 
 An example of evaluation results refers to `eval_time_and_space.log <https://github.com/wlsdzyzl/flemme/blob/main/scripts/unittest/eval_time_and_space.log>`_.
 
-Select Samples for visualization
-==================================
+Select Samples for Visualization (Ma)
+===================================================================
 (Especially for segmentation models) Sometimes we tried different methods like A, B, and C. And we might get a evaluation results like the follows: 
 
 .. math::
@@ -101,7 +101,7 @@ However, the accuracy is computed over the whole dataset. If we randomly choose 
 Also, we may want to select the sample with enough foreground regions for visualization. 
 
 This script can select samples whose predictions follow some specified relations and filter out those samples that don't contains a mininum number of foreground pixels.
-You can also choose to save the colorized segmented results.
+You can also choose to save the colorized segmented results. **This is particularly helpful when you need to make a figure to compare the results of different methods in your paper!!**
 
 .. code-block:: bash
 
