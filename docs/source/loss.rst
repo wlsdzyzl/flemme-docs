@@ -1,6 +1,6 @@
-==============================
+===============================
 Losses and Evaluation Metrics
-==============================
+===============================
 
 Flemme supports a series of loss functions for training and evaluation metrics for testing.
 

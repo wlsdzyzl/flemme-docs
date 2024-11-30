@@ -1,6 +1,7 @@
-=======
+=========
 Scripts
-=======
+=========
+
 We provide several `scripts <https://github.com/wlsdzyzl/flemme/tree/main/scripts>`_ for batch processing of datasets and performance evaluation. 
 
 Common Datasets

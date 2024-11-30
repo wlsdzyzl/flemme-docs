@@ -1,5 +1,5 @@
 train_unet_ddim.yaml
-=====================
+======================
 
 .. code-block:: yaml
   :linenos:

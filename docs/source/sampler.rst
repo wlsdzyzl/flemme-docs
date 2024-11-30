@@ -1,6 +1,6 @@
-========
+=========
 Sampler
-========
+=========
 
 For generative models, we provide a ``NormalSampler`` to sample random points in latent space from a standard normal distribution for generation.
 A sampler is bound to the actual generative model. To create a sampler, you have following parameters that need to be specified:

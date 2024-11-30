@@ -1,5 +1,6 @@
 Play with Flemme
-================
+==================
+
 After installing flemme, you can test it with some small datasets to get an intuition about its capabilities.
 
 Toy Example for Diffusion model

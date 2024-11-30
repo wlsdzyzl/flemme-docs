@@ -1,6 +1,6 @@
-===================
+=====================
 Model Architectures
-===================
+=====================
 Flemme supports various architectures for segmentation, reconstruction and generation tasks, but they are all built from a base encoder-decoder architecture.
 
 Base Architectures
