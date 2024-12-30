@@ -49,11 +49,11 @@ CNN indicates the encoders using **convolution** as backbones. To initialize a C
                     ## building block, can be one of ['conv', 'double_conv', 'res_conv']
                     building_block='conv', 
                     ## normalization, can be one of ['batch', 'group', 'instance', 'layer']
-                    normalization = 'group', num_group = 8, 
+                    normalization = 'group', num_norm_groups = 8, 
                     ## order of convolution and normalization in building block
                     cn_order = 'cn', 
                     ## number of building blocks in each layer
-                    num_block = 2,
+                    num_blocks = 2,
                     ## activation for building blocks
                     activation = 'relu', 
                     ## parameters related to attentions following convolution
@@ -96,9 +96,9 @@ CNN indicates the encoders using **convolution** as backbones. To initialize a C
                     kernel_size = 3, 
                     building_block='single', 
                     normalization = 'group', 
-                    num_group = 8, 
+                    num_norm_groups = 8, 
                     cn_order = 'cn', 
-                    num_block = 2, 
+                    num_blocks = 2, 
                     activation = 'relu', 
                     dropout=0.1, num_heads = 1, d_k = None, qkv_bias = True, qk_scale = None, atten_dropout = None, 
                     ## parameter determined by architectures.
@@ -161,8 +161,8 @@ ViT indicates the encoders using **vision transformer** as backbones. To initial
                     ## number of heads for MSA in each middle layer
                     middle_channels = [256, 256], 
                     middle_num_heads = [3, 3],
-                    normalization = 'layer', num_group = 8, 
-                    num_block = 2, 
+                    normalization = 'layer', num_norm_groups = 8, 
+                    num_blocks = 2, 
                     activation = 'silu', 
                     abs_pos_embedding = False,
                     return_features = False,
@@ -197,8 +197,8 @@ ViT indicates the encoders using **vision transformer** as backbones. To initial
 ..                     final_channels = [64, 64], 
 ..                     final_num_heads = [3, 3],
 ..                     normalization = 'layer', 
-..                     num_group = 8, 
-..                     num_block = 2, 
+..                     num_norm_groups = 8, 
+..                     num_blocks = 2, 
 ..                     activation = 'silu', 
 ..                     return_features = False, 
 ..                     qkv_bias=True, 
@@ -240,8 +240,8 @@ you need to specify the following parameters:
                     atten_dropout=0., 
                     drop_path=0.1, 
                     normalization = 'layer', 
-                    num_group = 8, 
-                    num_block = 2, 
+                    num_norm_groups = 8, 
+                    num_blocks = 2, 
                     activation = 'silu', 
                     abs_pos_embedding = False,
                     return_features = False,
@@ -273,8 +273,8 @@ you need to specify the following parameters:
 ..                     atten_dropout=0., 
 ..                     drop_path=0.1, 
 ..                     normalization = 'layer', 
-..                     num_group = 8, 
-..                     num_block = 2, 
+..                     num_norm_groups = 8, 
+..                     num_blocks = 2, 
 ..                     activation = 'silu', 
 ..                     return_features = False, 
 ..                     **kwargs)
@@ -305,8 +305,8 @@ you need to specify the following parameters:
                     dropout=0., 
                     drop_path=0.1, 
                     normalization = 'layer', 
-                    num_group = 8, 
-                    num_block = 2, 
+                    num_norm_groups = 8, 
+                    num_blocks = 2, 
                     activation = 'silu',
                     abs_pos_embedding = False,
                     return_features = False,
@@ -351,8 +351,8 @@ you need to specify the following parameters:
 ..                 learnable_init_states = True, 
 ..                 chunk_size=256,             
 ..                 dropout=0., drop_path=0.1, 
-..                 normalization = 'layer', num_group = 8, 
-..                 num_block = 2, activation = 'silu', 
+..                 normalization = 'layer', num_norm_groups = 8, 
+..                 num_blocks = 2, activation = 'silu', 
 ..                 scan_mode = 'single', flip_scan = True, 
 ..                 return_features = False,
 ..                 **kwargs)

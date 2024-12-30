@@ -25,9 +25,9 @@ train_unet_ddpm.yaml
         middle_channels: [128, 128]
         building_block: res
         activation: silu
-        num_block: 2
+        num_blocks: 2
         normalization: group
-        num_groups: 16
+        num_norm_groups: 16
         dropout: 0.1
   model_path: path/to/checkpoint/MNIST/DDPM/ckp_last.pth
   eval_gen:

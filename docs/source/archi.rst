@@ -308,7 +308,7 @@ Because SDM are based on conditional diffusion models, you need to specify the c
         building_block: double_swin
         abs_pos_embedding: false
         window_size: 10
-        num_block: 1
+        num_blocks: 1
       condition_embedding:
         combine_condition: cat
         merge_timestep_and_context: false
