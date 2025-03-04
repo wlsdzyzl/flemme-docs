@@ -327,7 +327,7 @@ Details of our hierarchical architecture can refer to our paper. Theoretically, 
 However, we don't recommend to use this design for diffusion model based methods. 
 Because we predict noise instead of reconstructing the image in the reverse diffusion process. 
 Noise usually doesn't contain clear global structures, and scaling the noise map may cause severe loss of details.
-Therefore, we construct hierarchical segmentation model and auto-encoder denoted as ``HSeM`` and ``HAE`` for segmentation and reconstruction.
+Therefore, we construct hierarchical segmentation model and auto-encoder denoted as ``HSeM`` and ``HAE`` for image segmentation and reconstruction. Note that ``HSeM`` and ``HAE`` are not supported for point cloud segmentation and reconstruction.
 
 
 To summarize, we have the following architectures:

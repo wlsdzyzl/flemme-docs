@@ -23,7 +23,7 @@ Install Flemme
 ==============
 
 Requirement list
-=======================
+----------------
 You need to install some necessary packages before using flemme. 
 
 .. code-block:: console
