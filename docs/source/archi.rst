@@ -1,7 +1,7 @@
 =====================
 Model Architectures
 =====================
-Flemme supports various architectures for segmentation, reconstruction and generation tasks, but they are all built from a base encoder-decoder architecture.
+Flemme supports various architectures for classification, segmentation, reconstruction and generation tasks, which are all built from a base encoder-decoder architecture.
 
 Base Architectures
 ==================
@@ -43,6 +43,7 @@ If the condition is a image or point cloud, any encoders introduced in  `Encoder
     # merge time-step embedding and context embedding, default: false
     # if you set this as true, 
     # make sure context embedding is a embedding vector and can be merged.
+    # This means we will process condition embedding in each block.
     merge_timestep_and_condition: false
     # condition embedding for encoder
     encoder:
@@ -72,7 +73,7 @@ In the above, we simply concat the input and condition for condition embedding o
 Time-step embedding
 -------------------
 For time-step, we use sinusoidal positional embedding. 
-You just need to specify the feature channel of time-step in model configuration.
+You just need to specify the channel of time-step in model configuration.
 
 .. code-block:: yaml
   :linenos:
@@ -93,14 +94,30 @@ You just need to specify the feature channel of time-step in model configuration
       ## define a encoder you want ...
 
 Base architecture are not directly trainable. You will need to define the losses for specific tasks. Three main derived architectures are illustrated in the following figure: 
-**(a) Segmentation Model (SeM); (b) Auto-Encoder (AE); (c) Denoising Diffusion Probabilistic Model (DDPM)**
+**(a) Classification Model; (b) Segmentation Model (SeM); (c) Auto-Encoder (AE); (d) Denoising Diffusion Probabilistic Model (DDPM)**
 
 .. image:: _static/archis.png
+
+Classification Model
+====================
+For **classification**, we provide ``ClM`` architecture (Classification Model), whose decoder is just a MLP to project the latent embedding to per-category scores. You need to specify ``classification_losses`` for ``ClM``. The following block define a classification model:
+
+.. code-block:: yaml
+  :linenos:
+
+  model:
+    # can be AE, VAE, SeM and DDPM
+    name: ClM
+    classification_losses: 
+      - name: CE
+    # encoder config
+    encoder:
+      ## define a encoder you want ...
 
 Segmentation Model
 ===================
 
-For **segmentation**, we provide ``SeM`` architecture (Segmentation Model), which is a simple extension of the base architecture. You need to define ``segmentation_losses`` for ``SeM``. The following block define a segmentation model using a hybrid loss combining Dice and BCE loss. For all supported losses, 
+For **segmentation**, we provide ``SeM`` architecture (Segmentation Model), which is a simple extension of the base architecture. You need to specify ``segmentation_losses`` for ``SeM``. The following block define a segmentation model using a hybrid loss combining Dice and BCE loss. For all supported losses, 
 please refer to `Losses <loss.html>`_.
 
 .. code-block:: yaml
@@ -330,11 +347,15 @@ Noise usually doesn't contain clear global structures, and scaling the noise map
 Therefore, we construct hierarchical segmentation model and auto-encoder denoted as ``HSeM`` and ``HAE`` for image segmentation and reconstruction. Note that ``HSeM`` and ``HAE`` are not supported for point cloud segmentation and reconstruction.
 
 
+
+
+
 To summarize, we have the following architectures:
 
 ==========  ====================
 Archi       Applicable tasks  
 ==========  ====================
+ClM         Classification
 SeM, HSeM   Segmentation
 AE, HAE     Reconstruction
 VAE         Reconstruction, Generation

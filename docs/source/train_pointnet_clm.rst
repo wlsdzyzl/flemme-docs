@@ -1,0 +1,91 @@
+train_pointnet_clm.yaml
+=======================
+
+.. code-block:: yaml
+  :linenos:
+
+  # train ae or vae
+  #### a template for pcd encoder
+  mode: train
+  model:
+    # can be AE, VAE, SeM and DDPM
+    name: ClM
+    # encoder config
+    encoder:
+      name: PointNet
+      in_channel: 3
+      out_channel: 46
+      point_num: 2048
+      building_block: dense
+      # num_neighbors_k: 20
+      local_feature_channels: [64, 64, 128, 256, 512]
+      dense_channels: [1024, 512, 256]
+      activation: lrelu
+      normalization: group
+    classification_losses: 
+      - name: CE
+  loader:
+    dataset: 
+      name: PcdClsDataset
+      data_suffix: .ply
+      cls_label: MedPointS
+    data_path_list: 
+      - path/to/datasets/pcd/MedPointS/classification/fold1
+      - path/to/datasets/pcd/MedPointS/classification/fold2
+      - path/to/datasets/pcd/MedPointS/classification/fold3
+    batch_size: 16
+    num_workers: 8
+    shuffle: true
+    data_transforms:
+      - name: Normalize
+      - name: FixedPoints
+        num: 2048
+      - name: ToTensor
+        dtype: float
+    label_transforms:
+      - name: ToOneHot
+        num_classes: 47
+        ignore_background: true
+      - name: ToTensor
+        dtype: float
+  val_loader:
+    dataset: 
+      name: PcdClsDataset
+      data_suffix: .ply
+      cls_label: MedPointS
+    data_path_list: 
+      - path/to/datasets/pcd/MedPointS/classification/fold4
+    batch_size: 32
+    num_workers: 8
+    shuffle: true
+    data_transforms:
+      - name: Normalize
+      - name: FixedPoints
+        num: 2048
+      - name: ToTensor
+        dtype: float
+    label_transforms:
+      - name: ToOneHot
+        num_classes: 47
+        ignore_background: true
+      - name: ToTensor
+        dtype: float
+  check_point_dir: path/to/flemme-ckp/MedPointS/PointNet/PointNet_CLS
+  ### parameter for optimizer
+  optimizer:
+    name: Adam
+    lr: 0.0001
+    weight_decay: 0.00000001
+  evaluation_metrics:
+    cls:
+      - name: ACC
+  score_metric:
+    name: ACC
+  ### scheduler for learning rate
+  lr_scheduler: 
+    name: LinearLR
+    start_factor: 1.0
+    end_factor: 0.01
+  max_epoch: 100
+  write_after_iters: 20
+  save_after_epochs: 1

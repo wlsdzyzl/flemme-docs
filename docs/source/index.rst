@@ -97,5 +97,7 @@ In the following modules, we elaborate supported architectures, encoders and oth
    test_unet_sem
    train_unet_ddim
    test_unet_ddpm
+   train_pointnet_clm
+   test_pointnet_clm
    
 More configuration files please refer to `resources <https://github.com/wlsdzyzl/flemme/tree/main/resources>`_.

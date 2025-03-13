@@ -11,8 +11,10 @@ In Flemme, you can modity some global parameters in global configuration ``flemm
         'transformer': True,
         ### VMamba, disable to get rid of [mamba-ssm (cuda version >= 11.6)]
         'mamba': True,
-        ### disable point cloud related encoders and algorithm to get rid of [plyfile, POT]
+        ### disable point cloud related encoders and algorithm to get rid of [plyfile, POT, cuda-knn]
         'point-cloud': False,
+        ### disable graph related encoders and algorithm to get rid of [geometric_torch]
+        'graph': False,
         ### logger level: one of [logging.INFO, logging.DEBUG]
         'logger_level': logging.INFO,
         ### color_map for colorization of segmentation: [Scannet, Custom] or one of matplotlib's colormaps

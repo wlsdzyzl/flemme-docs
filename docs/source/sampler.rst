@@ -22,7 +22,7 @@ A sampler is bound to the actual generative model. To create a sampler, you have
                       ## The clip range should be the numerical range of input elements.
                       clipped = None, 
                       clip_range = None, 
-                      **kwargs):
+                      **kwargs)
 
 You can create a sampler in training process to vasualize the generated results like follows:
 

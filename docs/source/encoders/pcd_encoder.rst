@@ -10,307 +10,302 @@ Non-hierarchical encoders and decoders follow a pipeline illustrated in followin
 
 .. image:: ../_static/en_de_pcd.png
 
+Note that only one of the components enclosed within red dashed box should be employed. 
 
 PointNet
 --------
 
-CNN indicates the encoders using **convolution** as backbones. To initialize a CNN encoder, you need to specify the following parameters:
+``PointNetEncoder`` use **sharedMLP** as backbones and has a similar architecture to `PointNet <https://arxiv.org/abs/1612.00593>`_. In addition, we also integrate dynamic local feature extraction (from `DGCNN <https://arxiv.org/abs/1801.07829>`_) into ``PointNetEncoder``. To initialize a PointNet encoder, you need to specify the following parameters:
 
 .. code-block:: python
     :linenos:
 
-    CNNEncoder.__init__(self, image_size, 
-                    ## number of input channels
-                    image_channel = 3, 
-                    ## number of input time channels (context embedding t) 
-                    time_channel = 0, 
-                    ## number of image patch channels
-                    patch_channel = 32, 
-                    ## size of image patch
-                    patch_size = 2,
-                    ## number of channel for each down-sample layer
-                    ## The length of list is the number of down-sample layers
-                    down_channels = [64, 128], 
-                    ## attention of each down-sample layers following convolution, should be one of [None, 'atten', 'ftt_atten']
-                    ## defaut value is None
-                    ## the length of this list should be equal to len(down_channels)
-                    down_attens = [None, None], 
-                    ## shape scaling for each layer, after down-sampling the image shape becomes [H, W, D] / shape_scaling
-                    shape_scaling = [2, 2],  
-                    ## number of channel for each middle layer
-                    ## The length of list is the number of middle layers
-                    middle_channels = [256, 256], 
-                    ## attention of each middle layers,
-                    middle_attens = [None, None], 
-                    ## define the convolution: depth-wise and kernel size
-                    depthwise = False, kernel_size = 3, 
-                    ## number of channels for each dense layer (fully-connected layer)
-                    ## dense_channels can be an empty list, indicating there is no dense layer in the encoder 
-                    dense_channels = [256], 
-                    ## method fur dowm-samping, can be one of ['conv', 'inter'], indicate using convolution and interpolation
-                    dsample_function = 'conv', 
-                    ## building block, can be one of ['conv', 'double_conv', 'res_conv']
-                    building_block='conv', 
-                    ## normalization, can be one of ['batch', 'group', 'instance', 'layer']
-                    normalization = 'group', num_norm_groups = 8, 
-                    ## order of convolution and normalization in building block
-                    cn_order = 'cn', 
-                    ## number of building blocks in each layer
-                    num_blocks = 2,
-                    ## activation for building blocks
-                    activation = 'relu', 
-                    ## parameters related to attentions following convolution
-                    dropout = 0.1, num_heads = 1, d_k = None, qkv_bias = True, qk_scale = None, atten_dropout = None, 
-                    ## add position embedding for constructed image patch
-                    abs_pos_embedding = False, 
-                    ## some parameters determined by architectures.
-                    return_features = False, z_count = 1, 
-                    **kwargs)
+    PointNetEncoder.__init__(self, point_dim=3, 
+                projection_channel = 64,
+                time_channel = 0,
+                ## parameter of KNN for local feature extraction.
+                ## if num_neighbors_k is set as 0, local feature extraction will not be performed.
+                num_neighbors_k=0, 
+                local_feature_channels = [64, 64, 128, 256], 
+                num_blocks = 2,
+                dense_channels = [256, 256],
+                building_block = 'dense', 
+                normalization = 'group', 
+                num_norm_groups = 8, 
+                activation = 'lrelu', 
+                dropout = 0., 
+                z_count = 1, 
+                ## If vector_embedding is true, the latent embedding is a vector;
+                ## otherwise, the latent embedding is point-wise features. 
+                vector_embedding = True, 
+                last_activation = True, 
+                **kwargs)
 
-``CNNDecoder`` has very similar parameters for initialization. But most of the parameters can be derived from the encoder:
+In the above, if ``num_neighbors_k`` is specified, we will use edge convolution to extraction dynamic local features through KNN algorithm. Otherwise, local features will not be computed.
+If ``vector_embedding`` is set as ``True``, the encoder will return a latent vector for each inputs. Otherwise, the encoder will return point-wise features.
+
+``PointNetDecoder`` is used to decode points from latent space through MLPs, which can used for reconstruction, segmentation, and other tasks. Typically, we dirrectly recover points from latent embeddings. In addition, we also integrate **Folding** operation (from `FoldingNet <https://arxiv.org/abs/1712.07262>`_) into ``PointNetDecoder`` when you specify ``folding_times``. We support ``grid2d``, ``grid3d``, ``cylinder``, ``uvsphere`` and ``icosphere`` as base shapes for folding operation.
+Note that ``PointNetDecoder`` can be used for all point cloud encoders. 
 
 .. code-block:: python
     :linenos:
 
-    CNNDecoder.__init__(self, 
-                    ## same as the encoder
-                    image_size,
-                    ## number of output channels. 
-                    ## if not specified, it is set to the image channel of the encoder.
-                    image_channel = 3, 
-                    ## number of latent channels (z, the output of encoder)
-                    ## derived from encoder
-                    in_channel = 256,  
-                    ## you can specify the following parameters, but we recommend to use the default choices
-                    ## by default, we reverse the correspondings in encoder
-                    dense_channels = [32], 
-                    up_channels = [128, 64], 
-                    up_attens = [None, None],
-                    shape_scaling = [2, 2], 
-                    ## you can specify these optional parameters
-                    ## but using default values is also a good choice
-                    final_channels = [], 
-                    final_attens = [], 
-                    usample_function = 'conv', 
-                    ## same as the encoder
-                    patch_size = 2, 
-                    time_channel = 0, 
-                    depthwise = False, 
-                    kernel_size = 3, 
-                    building_block='single', 
-                    normalization = 'group', 
-                    num_norm_groups = 8, 
-                    cn_order = 'cn', 
-                    num_blocks = 2, 
-                    activation = 'relu', 
-                    dropout=0.1, num_heads = 1, d_k = None, qkv_bias = True, qk_scale = None, atten_dropout = None, 
-                    ## parameter determined by architectures.
-                    return_features = False, 
-                    **kwargs)
+    PointNetDecoder.__init__(self, point_dim=3, 
+                point_num = 2048, 
+                ## out_channel of encoder is the in channel of decoder
+                in_channel = 256, 
+                dense_channels = [256], 
+                time_channel = 0,
+                normalization = 'group', 
+                num_norm_groups = 8, 
+                activation = 'lrelu', 
+                dropout = 0., 
+                ## if folding_times > 0, we will perform folding operations.
+                folding_times = 0, 
+                ## channel of hidden layers in folding operations.
+                folding_hidden_channels = [512, 512],
+                base_shape_config = {},
+                num_blocks = 2,
+                ## If folding_times = 0, we process results through a final MLPs.
+                final_channels = [512, 512],
+                ## Note that vector_embedding need to be True if you want to perform folding operations.
+                vector_embedding = True, 
+                **kwargs)
 
-The aboved parameters can be defined in the config file, in which the ``in_channel`` and ``out_channel`` refer to the ``image_channel`` of encoder and decoder respectively., ``decoder_fc_channel`` refers to ``fc_channel`` of decoder.
-As we discussed before, you don't need to define all parameters for encoder and decoder in the configuration file, most parameter of decoder can be directly derived from encoder. However, you can specify some of them for more flexible usage.
+The aboved parameters can be defined in the config file, in which the ``in_channel`` and ``out_channel`` refer to the ``point_dim`` of encoder and decoder respectively., ``decoder_fc_channel`` refers to ``fc_channel`` of decoder.
+As we discussed before, you don't need to define all parameters for encoder and decoder in the configuration file.
 
 .. code-block:: yaml
     :linenos:
 
     encoder:
-        name: CNN
-        in_channel: 1
-        out_channel: 1
-        ## the value can be list or int
-        image_size: 32
-        patch_size: 1
-        patch_channel: 32
-        ### up-sampling function
-        usample_function: conv
-        ### down-sampling function
-        dsample_function: conv
-        ## down channels, indicating an up_channels: [32, 16]
-        down_channels: [16, 32]
-        ## attentions for down-sampling layers
-        ## if the value is not a list, it will be transfered to a list with a same length of down-sampling layers: None -> [None, None]
-        down_attens: null
-        ## attentions for up-sampling layers
-        up_attens: [null, atten]
-        middle_channels: [32, 32]
-        # up_channels: [16, 8]
-        building_block: conv
-        dense_channels: [128]
-        decoder_dense_channels: [128, 64]
+        name: PointNet
+        in_channel: 3
+        out_channel: 46
+        point_num: 2048
+        building_block: dense
+        # num_neighbors_k: 20
+        local_feature_channels: [64, 64, 128, 256, 512]
+        dense_channels: [1024, 512, 256]
+        final_channels: [512, 512]
+        activation: lrelu
+        normalization: group
 
-Supported ``building_block`` for CNN encoder and decoder: ``[conv, res_conv, double_conv]``.
+Supported ``building_block`` for PointNet encoder and decoder: ``[dense, res_dense, double_dense]``.
 
 PointTrans
 ----------
-ViT indicates the encoders using **vision transformer** as backbones. To initialize a ViT encoder and decoder, you need to specify the following parameters:
+PointTrans indicates the encoders have a similar architecture as PointNet encoder but using **transformer** as backbones. To initialize a ``PointTransEncoder``, you need to specify the following parameters:
 
 .. code-block:: python
     :linenos:
 
-    ViTEncoder.__init__(self, 
-                    # similar parameters with CNN encoder
-                    image_size, 
-                    image_channel = 3, 
-                    patch_size = 2, 
-                    patch_channel = 32,
-                    building_block = 'vit', 
-                    dense_channels = [256], 
-                    time_channel = 0,
-                    down_channels = [128, 256], 
-                    ## number of heads for MSA in each down-sample layer, defaut value is 3
-                    ## The length of list is the number of down-sample layers
-                    down_num_heads = [3, 3], 
-                    ## number of heads for MSA in each middle layer
-                    middle_channels = [256, 256], 
-                    middle_num_heads = [3, 3],
-                    normalization = 'layer', num_norm_groups = 8, 
-                    num_blocks = 2, 
-                    activation = 'silu', 
-                    abs_pos_embedding = False,
-                    return_features = False,
-                    z_count = 1, 
-                    # parameters related to multi-head self attention and vit building block
-                    ## define the length of MLP layers and channels, channel = ratio * block_in_channel
-                    mlp_hidden_ratio=[4., ], 
-                    qkv_bias=True, qk_scale=None, 
-                    ## dropout information
-                    dropout=0., 
-                    atten_dropout=0., 
-                    drop_path=0.1, 
-                    **kwargs)
+    PointTransEncoder.__init__(self, point_dim=3, 
+                 projection_channel = 64,
+                 time_channel = 0,
+                 num_neighbors_k=0, 
+                 local_feature_channels = [64, 64, 128, 256], 
+                 num_blocks = 2,
+                 dense_channels = [256, 256],
+                 building_block = 'pct_sa', 
+                 normalization = 'group', num_norm_groups = 8, 
+                 activation = 'lrelu', dropout = 0., 
+                 ### transformer parameters
+                 num_heads = 4, d_k = None, 
+                 qkv_bias = True, 
+                 qk_scale = None, 
+                 atten_dropout = None, 
+                 residual_attention = False, 
+                 skip_connection = True,
+                 z_count = 1, 
+                 vector_embedding = True, 
+                 last_activation = True,
+                 **kwargs)
 
-.. Initialization of ViTDecoder:
-
-.. .. code-block:: python
-..     :linenos:
-
-..     ViTDecoder.__init__(self, 
-..                     # similar with ViT encoder and CNN decoder
-..                     image_size, 
-..                     image_channel = 3, 
-..                     in_channel = 64,
-..                     patch_size = 2, 
-..                     dense_channels = [32], 
-..                     building_block = 'vit',
-..                     time_channel = 0,
-..                     mlp_hidden_ratio=[4., ], 
-..                     up_channels = [128, 64], 
-..                     up_num_heads = [3, 3], 
-..                     final_channels = [64, 64], 
-..                     final_num_heads = [3, 3],
-..                     normalization = 'layer', 
-..                     num_norm_groups = 8, 
-..                     num_blocks = 2, 
-..                     activation = 'silu', 
-..                     return_features = False, 
-..                     qkv_bias=True, 
-..                     qk_scale=None, 
-..                     dropout=0., 
-..                     atten_dropout=0., 
-..                     drop_path=0.1, 
-..                     **kwargs)
-
-Supported ``building_block`` for ViT encoder and decoder: ``[vit]``.
-
+Note that ``PointTransDecoder`` is just an alias of ``PointNetDecoder``. Supported ``building_block`` for PointTrans encoder: ``[pct_sa, pct_oa]``, with ``pct_sa`` denoting self-attention and ``pct_oa`` denoting offset-attention from `PCT <https://arxiv.org/abs/2012.09688>`_, respectively.
 
 
 PointMamba
 ----------
 
-VMamba indicates the encoders using **vision mamba** as backbones. To initialize a VMamba encoder and decoder, 
+PointMamba indicates the encoders using **state space model (mamba)** as backbones. To initialize a ``PointMambaEncoder``, 
 you need to specify the following parameters:
 
 .. code-block:: python
     :linenos:
 
-    VMambaEncoder.__init__(self, 
-                    # same as ViT
-                    image_size, 
-                    image_channel = 3, 
-                    patch_size = 2, 
-                    patch_channel = 32,
-                    time_channel = 0,
-                    down_channels = [128, 256], 
-                    middle_channels = [256, 256], 
-                    mlp_hidden_ratio=[4., ], 
-                    building_block = 'vmamba', 
-                    dense_channels = [256],
-                    dropout=0., 
-                    drop_path=0.1, 
-                    normalization = 'layer', 
-                    num_norm_groups = 8, 
-                    num_blocks = 2, 
-                    activation = 'silu',
-                    abs_pos_embedding = False,
-                    return_features = False,
-                    z_count = 1, 
-                    # parameters related to Mamba SSM
-                    # details of these parameter can refer to the source code
-                    # default values give satisfactory results  
-                    state_channel=None, 
-                    conv_kernel_size=3,
-                    inner_factor = 2.0,
-                    dt_min=0.001, dt_max=0.1, 
-                    dt_init_floor=1e-4, 
-                    conv_bias=True, 
-                    bias=False,             
-                    ## cross-scan module, should be one of [single, simplified, cross]
-                    ## the corresponding times of scanning are 1, 2, 2 and 1, 2, 6 for 2D and 3D image patches, respectively. 
-                    scan_mode = 'single',
-                    ## Flip the scanning, double the scanning times
-                    flip_scan = True,
-                    head_channel = 64, 
-                    chunk_size=256, **kwargs)
+    PointMambaEncoder.__init__(self, point_dim=3, 
+                projection_channel = 64,
+                time_channel = 0,
+                num_neighbors_k=0, 
+                local_feature_channels = [64, 64, 128, 256], 
+                num_blocks = 2,
+                dense_channels = [256, 256],
+                building_block = 'pmamba', 
+                normalization = 'group', num_norm_groups = 8, 
+                activation = 'lrelu', dropout = 0.,
+                state_channel = 64, 
+                conv_kernel_size = 4, inner_factor = 2.0,  
+                head_channel = 64,
+                conv_bias=True, bias=False,
+                learnable_init_states = True, chunk_size=256,
+                dt_min=0.001, A_init_range=(1, 16),
+                dt_max=0.1, dt_init_floor=1e-4, 
+                dt_rank = None, dt_scale = 1.0,
+                z_count = 1, vector_embedding = True, 
+                last_activation = True,
+                skip_connection = True,
+                **kwargs)
 
-.. Initialization of VMambaDecoder:
-
-.. .. code-block:: python
-..     :linenos:
-
-..     VMambaDecoder.__init__(self, image_size, image_channel = 3, 
-..                 patch_size = 2, in_channel = 64,
-..                 mlp_hidden_ratio=[4., ], dense_channels = [32], 
-..                 up_channels = [128, 64], final_channels = [64, 64], 
-..                 time_channel = 0,
-..                 building_block = 'vmamba',
-..                 state_channel=None, 
-..                 conv_kernel_size=3,
-..                 inner_factor = 2.0, 
-..                 dt_rank=None, dt_min=0.001, 
-..                 dt_max=0.1, dt_init="random", dt_scale=1.0, 
-..                 dt_init_floor=1e-4, 
-..                 conv_bias=True, bias=False,
-..                 head_channel = 64, 
-..                 learnable_init_states = True, 
-..                 chunk_size=256,             
-..                 dropout=0., drop_path=0.1, 
-..                 normalization = 'layer', num_norm_groups = 8, 
-..                 num_blocks = 2, activation = 'silu', 
-..                 scan_mode = 'single', flip_scan = True, 
-..                 return_features = False,
-..                 **kwargs)
-
-Supported ``building_block`` for Swin encoder and decoder: ``[vmamba, vmamba2, double_vmamba, double_vmamba2, res_vmamba, res_vmamba2]``.
-
+Note that ``PointMambaDecoder`` is just an alias of ``PointNetDecoder``. Supported ``building_block`` for PointMamba encoder: ``[pmamba, pmamba2]``.
 
 Hierarchical
 ============
-Hierarchical encoders and decoders follow a pipeline illustrated in following figure (similar to PointNet++):
+Hierarchical point cloud encoders and decoders follow a pipeline illustrated in following figure (similar to PointNet++):
 
 .. image:: ../_static/en_de_pcd2.png
 
+In hierarchical encoders, we down-sample point cloud into different levels through the farthest-point sampling (FPS) and aggregate points through multi-scale neighbor queries.  
 
 We will elaborate supported hierarchical encoders in the remainder of this article.
 
+PointNet2
+----------
+PointNet2 has a hierarchical architecture with sharedMLP backbones. To define a ``PointNet2Encoder``, you need to specify the following parameters:
+
+.. code-block:: python
+    :linenos:
+
+    PointNet2Encoder.__init__(self, point_dim = 3,
+                 projection_channel = 64,
+                 time_channel = 0,
+                 ## number of fps points for each level
+                 num_fps_points = [1024, 512, 256, 64],
+                 ## number of neighbor query for each level
+                 num_neighbors_k = 32,
+                 ## max radius of radius query for each level  
+                 neighbor_radius = [0.1, 0.2, 0.4, 0.8], 
+                 ## number of feature channels for each level
+                 fps_feature_channels = [128, 256, 512, 1024], 
+                 num_blocks = 2,
+                 ## number of scales
+                 ## the radius and number of feature channels at each scale will be assigned based on the neighbor_radius and fps_feature_channels
+                 num_scales = 2,
+                 ## concat point position embedding in feature extraction
+                 use_xyz = True,
+                 ## sort the radius query results by distance (knn query returns a sorted result by default).
+                 sorted_query = False,
+                 ## use knn query or radius query.
+                 ## if knn_query is not false, it should be one of ['xyz', 'xyz_embed', 'feature'], which determine the knn query space.
+                 knn_query = False,
+                 dense_channels = [1024],
+                 building_block = 'dense', 
+                 normalization = 'group', num_norm_groups = 8, 
+                 activation = 'lrelu', dropout = 0., 
+                 vector_embedding = True, 
+                 ## if the decoder is a pointnet2-like decoder, the feature list will also be returned.
+                 is_point2decoder = False,
+                 z_count = 1, 
+                 return_xyz = False,
+                 last_activation = True,
+                 ## final concatenation of sample features at different levels
+                 final_concat = False,
+                 ## enable positional embedding
+                 pos_embedding = False,
+                 **kwargs)
+
+
+
+PointTrans2
+-----------
+
+PointTrans2 has a hierarchical architecture with **transformer** backbones. To define a ``PointTrans2Encoder``, you need to specify the following parameters:
+
+.. code-block:: python
+    :linenos:
+
+    PointTrans2Encoder.__init__(self, point_dim = 3,
+                 projection_channel = 64,
+                 time_channel = 0,
+                 num_fps_points = [1024, 512, 256, 64],
+                 num_neighbors_k = 32,
+                 neighbor_radius = [0.1, 0.2, 0.4, 0.8], 
+                 fps_feature_channels = [128, 256, 512, 1024], 
+                 num_blocks = 2,
+                 num_scales = 2,
+                 use_xyz = True,
+                 sorted_query = False,
+                 knn_query = False,
+                 dense_channels = [1024],
+                 building_block = 'dense', 
+                 normalization = 'group', num_norm_groups = 8, 
+                 activation = 'lrelu', dropout = 0., 
+                 num_heads = 4, d_k = None, 
+                 qkv_bias = True, qk_scale = None, atten_dropout = None, 
+                 residual_attention = False, skip_connection = True,
+                 vector_embedding = True, 
+                 is_point2decoder = False,
+                 ## Perform long range modeling on a global scale.
+                 ## Long range modeling is only suitable for sequence-modeling backbones, e.g., transformer and ssm.
+                 long_range_modeling = False,
+                 z_count = 1, 
+                 return_xyz = False,
+                 last_activation = True,
+                 final_concat = False,
+                 pos_embedding = False,
+                 **kwargs)
 
 PointMamba2
 -----------
-
+PointMamba2 has a hierarchical architecture with **state space model (mamba)** backbones. 
 
 A more detailed illustration of PointMamba2 Encoder with xyz&center scanning and long-range modeling is presented in:
 
 .. image:: ../_static/pointmamba2.png
+
+To define a ``PointMamba2Encoder``, you need to specify the following parameters:
+
+.. code-block:: python
+    :linenos:
+
+    PointMamba2Encoder.__init__(self, point_dim = 3,
+            projection_channel = 64,
+            time_channel = 0,
+            num_fps_points = [1024, 512, 256, 64],
+            num_neighbors_k = 32,
+            neighbor_radius = [0.1, 0.2, 0.4, 0.8], 
+            fps_feature_channels = [128, 256, 512, 1024], 
+            num_blocks = 2,
+            num_scales = 2,
+            use_xyz = True,
+            sorted_query = False,
+            knn_query = False,
+            dense_channels = [1024],
+            building_block = 'dense', 
+            flip_scan = False,
+            normalization = 'group', num_norm_groups = 8, 
+            activation = 'lrelu', dropout = 0., 
+            vector_embedding = True, 
+            state_channel = 64, 
+            conv_kernel_size = 4, inner_factor = 2.0,  
+            head_channel = 64,
+            conv_bias=True, bias=False,
+            learnable_init_states = True, chunk_size=256,
+            dt_min=0.001, A_init_range=(1, 16),
+            dt_max=0.1, dt_init_floor=1e-4, 
+            dt_rank = None, dt_scale = 1.0,
+            skip_connection = True,
+            is_point2decoder = False,
+            long_range_modeling = False,
+            ## point serialization
+            ## scan strategies should be a list whose elements are from ['x_order', 'y_order', 'z_order', 'center_dist', 'nonsort']
+            scan_strategies = None,
+            z_count = 1, 
+            return_xyz = False,
+            last_activation = True,
+            final_concat = False,
+            pos_embedding = False,
+            **kwargs)
 
 To summarize, we support the following point cloud encoders:
 

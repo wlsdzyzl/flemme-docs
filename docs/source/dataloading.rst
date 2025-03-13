@@ -68,16 +68,40 @@ ImgDataset
                 ## data_suffix, we only read data with specified data_suffix
                 ## can be specified in dataset[data_suffix] or loader[data_suffix_list] (if different dataset has different suffix) 
                 data_suffix = '.png', 
-                **kwargs):
+                **kwargs)
 
 For the above parameters, ``data_path`` can be specified in dataset config if there is only one dataset. 
 It can also be specified through ``data_path_list`` in loader config. ``data_transform`` need to be specified in loader block.
 Other parameters should be specified in dataset config.
 
+ImgClsDataset
+^^^^^^^^^^^^^^
+
+``ImgClsDataset`` defines a classification dataset contains images and the corresponding class labels.
+
+.. code-block:: python
+    :linenos:
+
+    ImgClsDataset.__init__(self, 
+                data_path, 
+                dim = 2,
+                data_transform = None, 
+                label_transform = None,
+                mode = 'train', 
+                data_suffix = '.png',
+                ## pre-shuffle the samples, because the samples are load by categories.
+                ## you can also do the shuffle in data-loader 
+                pre_shuffle = True,
+                ## map class names to class labels
+                ## also, samples should be store in the subdirs of data_path whose names are the corresponding class names
+                cls_label = {},
+                **kwargs)
+
+
 ImgSegDataset
 ^^^^^^^^^^^^^^
 
-``ImgSegDataset`` defines a dataset contains images and labels. Each image corresponds to one target with the same shape.
+``ImgSegDataset`` defines a dataset contains images and segmentation maps. Each image corresponds to one target with the same shape.
 
 .. code-block:: python
     :linenos:
@@ -108,7 +132,7 @@ ImgSegDataset
                     ## crop the non-zero region by image or label while keeping some margin
                     ## crop_nonzero should be a dict like: {'crop_by': label, 'margin':10}
                     crop_nonzero = None, 
-                    **kwargs):
+                    **kwargs)
 
 MultiModalityImgSegDataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -137,7 +161,7 @@ It has a same initialization function with ImgSegDataset, but some of the parame
                     ## how to combine label of different modalities, can be mean, sum or cat
                     ## if not specified, use the same combining method as data_combine
                     label_combine = None,
-                    **kwargs):
+                    **kwargs)
 
 The following configuration define a loader for BraTS21 dataset:
 
@@ -179,7 +203,123 @@ The following configuration define a loader for BraTS21 dataset:
 
 Point Cloud Datasets
 ---------------------
-Coming soon ...
+
+PcdDataset
+^^^^^^^^^^^^^^
+
+``PcdDataset`` defines a dataset contains only point clouds without any label or condition information.
+
+.. code-block:: python
+    :linenos:
+
+    PcdDataset.__init__(self, 
+                data_path, 
+                data_transform = None, 
+                data_dir = '', 
+                data_suffix = '.ply', 
+                **kwargs)
+
+PcdClsDataset
+^^^^^^^^^^^^^^
+
+``PcdClsDataset`` defines a classification dataset contains point clouds and the corresponding class labels.
+
+.. code-block:: python
+    :linenos:
+
+    PcdClsDataset.__init__(self, 
+                data_path, 
+                data_transform = None, 
+                label_transform = None,
+                mode = 'train', 
+                data_suffix = '.ply',
+                pre_shuffle = True,
+                ## a dict that maps class names to class labels.
+                ## we pre-define the dicts of shapenet and medshapes,
+                ## therefore, cls_label can also be 'shapenet' or 'medshapes'. 
+                cls_label = {},
+                **kwargs)
+
+
+PcdSegDataset
+^^^^^^^^^^^^^^
+
+``PcdSegDataset`` defines a dataset contains images and segmentation labels.
+
+.. code-block:: python
+    :linenos:
+    
+    PcdSegDataset.__init__(self, 
+                data_path, 
+                data_transform = None, 
+                label_transform = None, 
+                mode = 'train', 
+                data_dir = 'pcd', 
+                label_dir = 'label', 
+                data_suffix = '.ply', 
+                label_suffix='.seg', 
+                **kwargs):
+
+PcdReconWithClassLabelDataset
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``PcdReconWithClassLabelDataset`` defines a completion dataset contains partial or noisy point clouds, reconstruction targets, and corresponding category labels.
+
+.. code-block:: python
+    :linenos:
+    
+    PcdReconWithClassLabelDataset.__init__(self, data_path, 
+                 data_transform = None, 
+                 ## transform for class labels
+                 label_transform = None, 
+                 target_transform = None,
+                 mode = 'train', 
+                 data_dir = 'partial', 
+                 target_dir = 'target', 
+                 data_suffix = '.ply', 
+                 target_suffix='.ply', 
+                 cls_label = {},
+                 pre_shuffle = True,
+                 **kwargs):
+
+The following block defines a loader for MedPointS completion dataset:
+
+.. code-block:: yaml
+    :linenos:
+
+    loader:
+      dataset: 
+        name: PcdReconWithClassLabelDataset
+        data_dir: partial
+        target_dir: target
+        data_suffix: .ply
+        target_suffix: .ply
+        cls_label: MedPointS
+      data_path_list: 
+        - /media/wlsdzyzl/DATA/datasets/pcd/MedPointS/completion/fold1
+        - /media/wlsdzyzl/DATA/datasets/pcd/MedPointS/completion/fold2
+        - /media/wlsdzyzl/DATA/datasets/pcd/MedPointS/completion/fold3
+      batch_size: 64
+      num_workers: 8
+      shuffle: true
+      data_transforms:
+        - name: Normalize
+        - name: FixedPoints
+          num: 2048
+        - name: ToTensor
+          dtype: float
+      target_transforms:
+        - name: Normalize
+        - name: FixedPoints
+          num: 2048
+        - name: ToTensor
+          dtype: float
+      label_transforms:
+        - name: ToOneHot
+          num_classes: 47
+          ignore_background: true
+        - name: ToTensor
+          dtype: float
 
 Data Augmentations
 ===================
@@ -296,4 +436,54 @@ We adopt and implement some common augmentations for 3D images.
 
 Point Cloud Augmentation
 -------------------------
-Coming soon ...
+
+We adopt and implement some common augmentations for point clouds.
+
+.. code-block:: python
+  :linenos:
+
+  # Numpy to tensor
+  ToTensor.__init__(self, dtype = 'float')
+  # Centers and normalizes node positions to the interval :math:`(-1, 1)`.
+  # method should be one of ['minmax', 'mean']
+  Normalize.__init__(self, method = 'minmax')
+  # Samples a fixed number of points and features from a point cloud.
+  FixedPoints.__init__(self, num, replace=True)
+  # Transforms node positions with a square transformation matrix computed offline.
+  LinearTransformation.__init__(self, matrix)
+  # Rotates node positions around a specific axis by a randomly sampled factor within a given interval.
+  #  Args:
+  #    degrees (tuple or float): rotation degree
+  #    axis (int, optional): The rotation axis. (default: :obj:`0`)
+  Rotate.__init__(self, degree, axis=0)
+  # Rotates node positions around a specific axis by a randomly sampled factor within a given interval.
+  #    Args:
+  #        degrees (tuple or float): Rotation interval from which the rotation
+  #            angle is sampled. If :obj:`degrees` is a number instead of a
+  #            tuple, the interval is given by :math:`[-\mathrm{degrees},
+  #            \mathrm{degrees}]`.
+  #        axis (int, optional): The rotation axis. (default: :obj:`0`)
+  RandomRotate.__init__(self, degrees, axis=0)
+  # Add gaussian noise to points
+  AddNoise.__init__(self, std=0.01)
+  # Add gaussian noise with random std to points
+  AddRandomNoise.__init__(self, std_range=[0, 0.10])
+  # Scales node positions by a randomly sampled factor s within given interval, *e.g.*, resulting in the transformation matrix
+  RandomScale.__init__(self, scales)
+  # Translates node positions by randomly sampled translation values within a given interval. 
+  # In contrast to other random transformations, translation is applied separately at each position.
+  #    Args:
+  #        translate (sequence or float or int): Maximum translation in each
+  #            dimension, defining the range
+  #            :math:`(-\mathrm{translate}, +\mathrm{translate})` to sample from.
+  #            If :obj:`translate` is a number instead of a sequence, the same
+  #            range is used for each dimension.
+  RandomTranslate.__init__(self, translate)
+  # Shuffle order of points in point cloud
+  ShufflePoints.__init__(self)
+  # reorder points by a specified axis
+  ReorderByAxis.__init__(self, axis=0)
+  # reorder points by Hilbert curve
+  ReorderByHilbert.__init__(self, bins = 16, radius = 1.0, origin = (0,0,0))
+  # To one hot label, background value should be 0
+  ToOneHot.__init__(self, num_classes = None, ignore_background = False, **kwargs)

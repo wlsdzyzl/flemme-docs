@@ -60,11 +60,13 @@ CNN indicates the encoders using **convolution** as backbones. To initialize a C
                     dropout = 0.1, num_heads = 1, d_k = None, qkv_bias = True, qk_scale = None, atten_dropout = None, 
                     ## add position embedding for constructed image patch
                     abs_pos_embedding = False, 
+                    ## If last_activation is set as True, we will perform normalization and activation in the last layer of encoder.
+                    last_activation = True, 
                     ## some parameters determined by architectures.
                     return_features = False, z_count = 1, 
                     **kwargs)
 
-``CNNDecoder`` has very similar parameters for initialization. But most of the parameters can be derived from the encoder:
+``CNNDecoder`` has very similar parameters for initialization. 
 
 .. code-block:: python
     :linenos:
@@ -105,8 +107,9 @@ CNN indicates the encoders using **convolution** as backbones. To initialize a C
                     return_features = False, 
                     **kwargs)
 
-The aboved parameters can be defined in the config file, in which the ``in_channel`` and ``out_channel`` refer to the ``image_channel`` of encoder and decoder respectively., ``decoder_fc_channel`` refers to ``fc_channel`` of decoder.
-As we discussed before, you don't need to define all parameters for encoder and decoder in the configuration file, most parameter of decoder can be directly derived from encoder. However, you can specify some of them for more flexible usage.
+The aboved parameters can be defined in the configuration file, in which the ``in_channel`` and ``out_channel`` refer to the ``image_channel`` of encoder and decoder, respectively. ``decoder_fc_channel`` refers to ``fc_channel`` of decoder.
+As we discussed before, you don't need to define all parameters for encoder and decoder in the configuration file. Also, parameters of decoder can be directly derived from encoder, so usually it is not necessary to define a decoder in configuration file. 
+Although we support to specify some parameters of decoder for more flexible usage. An example configuration file is presented as the follows:
 
 .. code-block:: yaml
     :linenos:
@@ -175,6 +178,7 @@ ViT indicates the encoders using **vision transformer** as backbones. To initial
                     dropout=0., 
                     atten_dropout=0., 
                     drop_path=0.1, 
+                    last_activation = True, 
                     **kwargs)
 
 .. Initialization of ViTDecoder:
@@ -246,6 +250,7 @@ you need to specify the following parameters:
                     abs_pos_embedding = False,
                     return_features = False,
                     z_count = 1, 
+                    last_activation = True, 
                     **kwargs)
 
 .. Initialization of SwinDecoder:
@@ -327,7 +332,9 @@ you need to specify the following parameters:
                     ## Flip the scanning, double the scanning times
                     flip_scan = True,
                     head_channel = 64, 
-                    chunk_size=256, **kwargs)
+                    chunk_size=256, 
+                    last_activation = True, 
+                    **kwargs)
 
 .. Initialization of VMambaDecoder:
 
