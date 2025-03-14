@@ -3,10 +3,10 @@
 # -- Project information
 
 project = 'Flemme'
-copyright = '2024, wlsdzyzl'
+copyright = '2025, wlsdzyzl'
 author = 'wlsdzyzl'
 release = '0.0'
-version = '0.0.0'
+version = '0.1.0'
 
 # -- General configuration
 

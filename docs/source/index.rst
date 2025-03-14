@@ -15,7 +15,9 @@ The above is an overview of Flemme. In Flemme, we separate encoders from the mod
 
 We support encoders using **convolution**, **transformer** and **SSM (state-space model)** as backbones. For model architectures, we implement the base architecture following an encoder-decoder style. Several derived architectures are used for segmentation, reconstruction and generation tasks. 
 
-We are also working on Flemme to support **point cloud** modeling.
+Now, Flemme also supports **point cloud** modeling! For example, an overview of models built with ``PointMamba2Encoder`` is illustrated in the following figure: 
+
+.. image:: ../_static/pointmamba2.png
 
 Now, let's get Started with Flemme!
 
@@ -40,7 +42,7 @@ The following packages are optional. You can modify `Gloal Configuration <global
    # For vision mamba
    mamba-ssm (CUDA version >= 11.6)
    # For io and evaluation of point cloud
-   POT plyfile
+   POT plyfile KNN-CUDA
 
 After installing the required packages, now you can install Flemme into your environment.
 
