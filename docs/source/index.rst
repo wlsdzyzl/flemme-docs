@@ -17,7 +17,7 @@ We support encoders using **convolution**, **transformer** and **SSM (state-spac
 
 Now, Flemme also supports **point cloud** modeling! For example, an overview of models built with ``PointMamba2Encoder`` is illustrated in the following figure: 
 
-.. image:: ../_static/pointmamba2.png
+.. image:: ./_static/pointmamba2.png
 
 Now, let's get Started with Flemme!
 
