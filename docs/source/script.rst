@@ -89,9 +89,9 @@ Time and space usage are recorded and printed after the test. To run this script
 
 An example of evaluation results refers to `eval_time_and_space.log <https://github.com/wlsdzyzl/flemme/blob/main/scripts/unittest/eval_time_and_space.log>`_.
 
-Select Samples for Visualization (Ma)
+Select Samples for Visualization 
 ===================================================================
-(Especially for segmentation models) Sometimes we tried different methods like A, B, and C. And we might get a evaluation results like the follows: 
+Sometimes we tried different methods like A, B, and C. And we might get a evaluation results like the follows: 
 
 .. math::
 
@@ -129,3 +129,18 @@ You can also choose to save the colorized segmented results. **This is particula
     # if this optional is set, we choose the middle slice to represent a 3D image.
     # otherwise, we will search all slices (might take a much longer time). 
     --compute_middle_for_3d
+    # for segmentation, the ratio of foreground points or pixels should be larger than 0.01
+    --minimum_ratio 0.01
+    # the differences among scores should be larger than 0.05
+    --score_margin 0.05
+
+Render Points and Mesh
+=======================
+Render point cloud or mesh with mitsuba. The path of input, transformation, color, illumination, and other rendering-related parameters can be adjusted in the codes.
+The render results are saved in ``mitsuba_scene.png``.
+
+.. code-block:: bash
+    ## render point cloud
+    python render_pcd.py
+    ## render mesh
+    python render_mesh.py
