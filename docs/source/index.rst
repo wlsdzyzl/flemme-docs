@@ -90,6 +90,7 @@ In the following modules, we elaborate supported architectures, encoders and oth
    global_config
    script
    play
+   medpoints
 
 .. toctree::
    :maxdepth: 2
