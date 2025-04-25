@@ -11,4 +11,4 @@ An overview of *MedPointS* is presented int the following figure:
 
 *MedPointS* can be downloaded from this `link <https://pan.baidu.com/s/1OKiglb6FtGmBLNwhVQXz9Q?pwd=cs27>`_.
 
-Alternatively, you can use load the dataset from Hugging Face: [MedPoints-cls](https://huggingface.co/datasets/wlsdzyzl/MedPointS-cls) , [MedPoints-cpl](https://huggingface.co/datasets/wlsdzyzl/MedPointS-cpl), and [MedPoints-seg](https://huggingface.co/datasets/wlsdzyzl/MedPointS-seg) for classification, completion, and segmentation tasks. 
+Alternatively, you can use load the dataset from Hugging Face: `MedPoints-cls <https://huggingface.co/datasets/wlsdzyzl/MedPointS-cls>`_, `MedPoints-cpl <https://huggingface.co/datasets/wlsdzyzl/MedPointS-cpl>`_, and `MedPoints-seg <https://huggingface.co/datasets/wlsdzyzl/MedPointS-seg>`_ for classification, completion, and segmentation tasks. 
